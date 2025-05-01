@@ -43,15 +43,18 @@ where
 In the following exercises, write the SQL as requested to discover the answer.
 
 ```{python}
-# Task 1
+## Task 1
+
+```{python}
 run_sql_and_return_html(cnx,"""
 SELECT COUNT(*) AS "Row Count"
 FROM world_bank_data.wdi_country;
 """)
 ```
 
+## Task 2
+
 ```{python}
-# Task 2
 run_sql_and_return_html(cnx,"""
 SELECT *
 FROM world_bank_data.wdi_country
@@ -59,8 +62,9 @@ LIMIT 5;
 """)
 ```
 
+## Task 3
+
 ```{python}
-# Task 3
 run_sql_and_return_html(cnx,"""
 SELECT *
 FROM world_bank_data.wdi_country
@@ -68,15 +72,15 @@ WHERE is_country = 0;
 """)
 ```
 
+## Task 4
+
 ```{python}
-# Task 4 - Drop
 execute_ddl(cnx,"""
 DROP TABLE IF EXISTS wdi_country;
 """)
 ```
 
 ```{python}
-# Task 4 - Create
 execute_ddl(cnx,"""
 CREATE TABLE wdi_country AS
 SELECT *
@@ -86,22 +90,23 @@ WHERE is_country = 1;
 ```
 
 ```{python}
-# Task 4 - Count rows
 run_sql_and_return_html(cnx,"""
 SELECT COUNT(*) FROM wdi_country;
 """)
 ```
 
+## Task 5
+
 ```{python}
-# Task 5
 run_sql_and_return_html(cnx,"""
 SELECT COUNT(*) FROM wdi_country
 WHERE latest_year = 2020;
 """)
 ```
 
+## Task 6
+
 ```{python}
-# Task 6
 run_sql_and_return_html(cnx,"""
 SELECT DISTINCT country_region
 FROM wdi_country
@@ -109,8 +114,9 @@ ORDER BY country_region;
 """)
 ```
 
+## Task 7
+
 ```{python}
-# Task 7
 run_sql_and_return_html(cnx,"""
 SELECT country_region, COUNT(*) AS country_count
 FROM wdi_country
@@ -119,8 +125,9 @@ ORDER BY country_count DESC;
 """)
 ```
 
+## Task 8
+
 ```{python}
-# Task 8
 run_sql_and_return_html(cnx,"""
 SELECT country_name, country_region
 FROM wdi_country
@@ -129,8 +136,9 @@ ORDER BY country_name;
 """)
 ```
 
+## Task 9
+
 ```{python}
-# Task 9
 run_sql_and_return_html(cnx,"""
 SELECT country_region, country_short_name, country_name
 FROM wdi_country
@@ -138,8 +146,9 @@ WHERE country_name = 'Qatar';
 """)
 ```
 
+## Task 10
+
 ```{python}
-# Task 10
 run_sql_and_return_html(cnx,"""
 SELECT country_code, country_short_name, country_abbr, country_wb_abbr, country_region
 FROM wdi_country
@@ -148,8 +157,9 @@ ORDER BY country_short_name;
 """)
 ```
 
+## Task 11
+
 ```{python}
-# Task 11
 run_sql_and_return_html(cnx,"""
 SELECT country_income_category, COUNT(*) AS country_count
 FROM wdi_country
@@ -158,8 +168,9 @@ ORDER BY country_count DESC;
 """)
 ```
 
+## Task 12
+
 ```{python}
-# Task 12
 run_sql_and_return_html(cnx,"""
 SELECT country_short_name
 FROM wdi_country
@@ -167,8 +178,9 @@ WHERE country_income_category IS NULL OR country_income_category = '';
 """)
 ```
 
+## Task 13
+
 ```{python}
-# Task 13 - Update income for Venezuela
 execute_ddl(cnx,"""
 UPDATE wdi_country
 SET country_income_category = 'High income'
@@ -177,7 +189,6 @@ WHERE country_short_name = 'Venezuela';
 ```
 
 ```{python}
-# Task 13 - Verify
 run_sql_and_return_html(cnx,"""
 SELECT country_short_name, country_income_category
 FROM wdi_country
@@ -185,8 +196,9 @@ WHERE country_short_name = 'Venezuela';
 """)
 ```
 
+## Task 14
+
 ```{python}
-# Task 14
 run_sql_and_return_html(cnx,"""
 SELECT country_region, country_income_category, COUNT(*) AS country_count
 FROM wdi_country
@@ -195,8 +207,9 @@ ORDER BY country_region, country_income_category;
 """)
 ```
 
+## Task 15
+
 ```{python}
-# Task 15
 run_sql_and_return_html(cnx,"""
 SELECT
   country_region,
@@ -211,8 +224,9 @@ GROUP BY country_region;
 """)
 ```
 
+## Task 16
+
 ```{python}
-# Task 16
 run_sql_and_return_html(cnx,"""
 SELECT COUNT(*) AS low_count, country_region, country_income_category
 FROM wdi_country
@@ -223,8 +237,9 @@ LIMIT 1;
 """)
 ```
 
+## Task 17
+
 ```{python}
-# Task 17
 run_sql_and_return_html(cnx,"""
 SELECT country_code, country_short_name, country_region, country_income_category
 FROM wdi_country
@@ -238,8 +253,9 @@ ORDER BY country_short_name;
 """)
 ```
 
+## Task 18
+
 ```{python}
-# Task 18
 run_sql_and_return_html(cnx,"""
 WITH regions AS (
   SELECT DISTINCT country_region FROM wdi_country
@@ -263,8 +279,9 @@ WHERE e.country_region IS NULL;
 """)
 ```
 
+## Task 19
+
 ```{python}
-# Task 19
 run_sql_and_return_html(cnx,"""
 WITH base AS (
   SELECT country_region, country_income_category, COUNT(*) AS count
@@ -299,8 +316,9 @@ JOIN grand_total g;
 """)
 ```
 
+## Task 20
+
 ```{python}
-# Task 20
 run_sql_and_return_html(cnx,"""
 WITH base AS (
   SELECT country_region, country_income_category, COUNT(*) AS count
@@ -322,8 +340,9 @@ GROUP BY country_region, total;
 """)
 ```
 
+## Task 21
+
 ```{python}
-# Task 21
 run_sql_and_return_html(cnx,"""
 WITH base AS (
   SELECT country_income_category, COUNT(*) AS count
@@ -340,4 +359,3 @@ SELECT
   ROUND(base.count * 100.0 / total.total_count, 2) AS percent_of_total
 FROM base, total;
 """)
-```
