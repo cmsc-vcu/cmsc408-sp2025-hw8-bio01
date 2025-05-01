@@ -69,14 +69,14 @@ WHERE is_country = 0;
 ```
 
 ```{python}
-# Task 4 - Drop table
+# Task 4 - Drop
 execute_ddl(cnx,"""
 DROP TABLE IF EXISTS wdi_country;
 """)
 ```
 
 ```{python}
-# Task 4 - Create table
+# Task 4 - Create
 execute_ddl(cnx,"""
 CREATE TABLE wdi_country AS
 SELECT *
@@ -86,7 +86,7 @@ WHERE is_country = 1;
 ```
 
 ```{python}
-# Task 4 - Count new records
+# Task 4 - Count rows
 run_sql_and_return_html(cnx,"""
 SELECT COUNT(*) FROM wdi_country;
 """)
@@ -95,8 +95,7 @@ SELECT COUNT(*) FROM wdi_country;
 ```{python}
 # Task 5
 run_sql_and_return_html(cnx,"""
-SELECT COUNT(*)
-FROM wdi_country
+SELECT COUNT(*) FROM wdi_country
 WHERE latest_year = 2020;
 """)
 ```
@@ -113,10 +112,10 @@ ORDER BY country_region;
 ```{python}
 # Task 7
 run_sql_and_return_html(cnx,"""
-SELECT country_region, COUNT(*) AS num_countries
+SELECT country_region, COUNT(*) AS country_count
 FROM wdi_country
 GROUP BY country_region
-ORDER BY num_countries DESC;
+ORDER BY country_count DESC;
 """)
 ```
 
@@ -125,7 +124,7 @@ ORDER BY num_countries DESC;
 run_sql_and_return_html(cnx,"""
 SELECT country_name, country_region
 FROM wdi_country
-WHERE LOWER(country_region) = 'north america'
+WHERE country_region = 'North America'
 ORDER BY country_name;
 """)
 ```
@@ -133,9 +132,9 @@ ORDER BY country_name;
 ```{python}
 # Task 9
 run_sql_and_return_html(cnx,"""
-SELECT country_region, country_name, country_short_name
+SELECT country_region, country_short_name, country_name
 FROM wdi_country
-WHERE LOWER(country_name) = 'qatar';
+WHERE country_name = 'Qatar';
 """)
 ```
 
@@ -144,7 +143,7 @@ WHERE LOWER(country_name) = 'qatar';
 run_sql_and_return_html(cnx,"""
 SELECT country_code, country_short_name, country_abbr, country_wb_abbr, country_region
 FROM wdi_country
-WHERE country_abbr <> country_wb_abbr
+WHERE country_abbr IS DISTINCT FROM country_wb_abbr
 ORDER BY country_short_name;
 """)
 ```
@@ -152,24 +151,24 @@ ORDER BY country_short_name;
 ```{python}
 # Task 11
 run_sql_and_return_html(cnx,"""
-SELECT country_income_category, COUNT(*) AS num_countries
+SELECT country_income_category, COUNT(*) AS country_count
 FROM wdi_country
 GROUP BY country_income_category
-ORDER BY num_countries DESC;
+ORDER BY country_count DESC;
 """)
 ```
 
 ```{python}
 # Task 12
 run_sql_and_return_html(cnx,"""
-SELECT country_short_name, country_income_category
+SELECT country_short_name
 FROM wdi_country
 WHERE country_income_category IS NULL OR country_income_category = '';
 """)
 ```
 
 ```{python}
-# Task 13 - Update income category
+# Task 13 - Update income for Venezuela
 execute_ddl(cnx,"""
 UPDATE wdi_country
 SET country_income_category = 'High income'
@@ -178,7 +177,7 @@ WHERE country_short_name = 'Venezuela';
 ```
 
 ```{python}
-# Task 13 - Verify update
+# Task 13 - Verify
 run_sql_and_return_html(cnx,"""
 SELECT country_short_name, country_income_category
 FROM wdi_country
@@ -189,7 +188,7 @@ WHERE country_short_name = 'Venezuela';
 ```{python}
 # Task 14
 run_sql_and_return_html(cnx,"""
-SELECT country_region, country_income_category, COUNT(*) AS num_countries
+SELECT country_region, country_income_category, COUNT(*) AS country_count
 FROM wdi_country
 GROUP BY country_region, country_income_category
 ORDER BY country_region, country_income_category;
@@ -201,12 +200,12 @@ ORDER BY country_region, country_income_category;
 run_sql_and_return_html(cnx,"""
 SELECT
   country_region,
-  SUM(CASE WHEN country_income_category = 'High income' THEN 1 ELSE 0 END) AS High,
-  SUM(CASE WHEN country_income_category = 'Upper middle income' THEN 1 ELSE 0 END) AS Upper_Middle,
-  SUM(CASE WHEN country_income_category = 'Lower middle income' THEN 1 ELSE 0 END) AS Lower_Middle,
-  SUM(CASE WHEN country_income_category = 'Low income' THEN 1 ELSE 0 END) AS Low,
-  SUM(CASE WHEN country_income_category IS NULL OR country_income_category = '' THEN 1 ELSE 0 END) AS Unknown,
-  COUNT(*) AS Total
+  SUM(CASE WHEN country_income_category = 'High income' THEN 1 ELSE 0 END) AS high_income,
+  SUM(CASE WHEN country_income_category = 'Upper middle income' THEN 1 ELSE 0 END) AS upper_middle,
+  SUM(CASE WHEN country_income_category = 'Lower middle income' THEN 1 ELSE 0 END) AS lower_middle,
+  SUM(CASE WHEN country_income_category = 'Low income' THEN 1 ELSE 0 END) AS low_income,
+  SUM(CASE WHEN country_income_category IS NULL OR country_income_category = '' THEN 1 ELSE 0 END) AS unknown,
+  COUNT(*) AS total
 FROM wdi_country
 GROUP BY country_region;
 """)
@@ -215,11 +214,11 @@ GROUP BY country_region;
 ```{python}
 # Task 16
 run_sql_and_return_html(cnx,"""
-SELECT COUNT(*) AS low_income_count, country_region, country_income_category
+SELECT COUNT(*) AS low_count, country_region, country_income_category
 FROM wdi_country
 WHERE country_income_category = 'Low income'
 GROUP BY country_region, country_income_category
-ORDER BY low_income_count DESC
+ORDER BY low_count DESC
 LIMIT 1;
 """)
 ```
@@ -230,10 +229,10 @@ run_sql_and_return_html(cnx,"""
 SELECT country_code, country_short_name, country_region, country_income_category
 FROM wdi_country
 WHERE country_region = (
-    SELECT country_region FROM wdi_country WHERE country_code = 'MHL'
+  SELECT country_region FROM wdi_country WHERE country_code = 'MHL'
 )
 AND country_income_category = (
-    SELECT country_income_category FROM wdi_country WHERE country_code = 'MHL'
+  SELECT country_income_category FROM wdi_country WHERE country_code = 'MHL'
 )
 ORDER BY country_short_name;
 """)
@@ -248,20 +247,19 @@ WITH regions AS (
 incomes AS (
   SELECT DISTINCT country_income_category FROM wdi_country
 ),
-combos AS (
+all_combos AS (
   SELECT r.country_region, i.country_income_category
   FROM regions r CROSS JOIN incomes i
 ),
-actuals AS (
-  SELECT country_region, country_income_category
+existing AS (
+  SELECT DISTINCT country_region, country_income_category
   FROM wdi_country
-  GROUP BY country_region, country_income_category
 )
-SELECT c.*
-FROM combos c
-LEFT JOIN actuals a
-ON c.country_region = a.country_region AND c.country_income_category = a.country_income_category
-WHERE a.country_region IS NULL;
+SELECT a.*
+FROM all_combos a
+LEFT JOIN existing e
+ON a.country_region = e.country_region AND a.country_income_category IS NOT DISTINCT FROM e.country_income_category
+WHERE e.country_region IS NULL;
 """)
 ```
 
@@ -274,30 +272,30 @@ WITH base AS (
   GROUP BY country_region, country_income_category
 ),
 region_totals AS (
-  SELECT country_region, SUM(count) AS region_total
+  SELECT country_region, SUM(count) AS total_by_region
   FROM base
   GROUP BY country_region
 ),
 income_totals AS (
-  SELECT country_income_category, SUM(count) AS income_total
+  SELECT country_income_category, SUM(count) AS total_by_income
   FROM base
   GROUP BY country_income_category
 ),
-total_sum AS (
-  SELECT SUM(count) AS total_countries FROM base
+grand_total AS (
+  SELECT SUM(count) AS total FROM base
 )
 SELECT
   b.country_region,
   b.country_income_category,
   b.count,
-  r.region_total,
-  i.income_total,
-  t.total_countries,
-  ROUND((b.count * 100.0 / t.total_countries), 2) AS percent_of_total
+  r.total_by_region,
+  i.total_by_income,
+  g.total,
+  ROUND((b.count * 100.0 / g.total), 2) AS percent_of_total
 FROM base b
 JOIN region_totals r ON b.country_region = r.country_region
-JOIN income_totals i ON b.country_income_category = i.country_income_category
-JOIN total_sum t;
+JOIN income_totals i ON b.country_income_category IS NOT DISTINCT FROM i.country_income_category
+JOIN grand_total g;
 """)
 ```
 
@@ -310,17 +308,17 @@ WITH base AS (
   GROUP BY country_region, country_income_category
 ),
 total_sum AS (
-  SELECT SUM(count) AS total_countries FROM base
+  SELECT SUM(count) AS total FROM base
 )
 SELECT
   country_region,
-  ROUND(SUM(CASE WHEN country_income_category = 'High income' THEN count ELSE 0 END) * 100.0 / total_countries, 2) AS High,
-  ROUND(SUM(CASE WHEN country_income_category = 'Upper middle income' THEN count ELSE 0 END) * 100.0 / total_countries, 2) AS Upper_Middle,
-  ROUND(SUM(CASE WHEN country_income_category = 'Lower middle income' THEN count ELSE 0 END) * 100.0 / total_countries, 2) AS Lower_Middle,
-  ROUND(SUM(CASE WHEN country_income_category = 'Low income' THEN count ELSE 0 END) * 100.0 / total_countries, 2) AS Low,
-  ROUND(SUM(CASE WHEN country_income_category IS NULL OR country_income_category = '' THEN count ELSE 0 END) * 100.0 / total_countries, 2) AS Unknown
+  ROUND(SUM(CASE WHEN country_income_category = 'High income' THEN count ELSE 0 END) * 100.0 / total, 2) AS high,
+  ROUND(SUM(CASE WHEN country_income_category = 'Upper middle income' THEN count ELSE 0 END) * 100.0 / total, 2) AS upper_middle,
+  ROUND(SUM(CASE WHEN country_income_category = 'Lower middle income' THEN count ELSE 0 END) * 100.0 / total, 2) AS lower_middle,
+  ROUND(SUM(CASE WHEN country_income_category = 'Low income' THEN count ELSE 0 END) * 100.0 / total, 2) AS low,
+  ROUND(SUM(CASE WHEN country_income_category IS NULL OR country_income_category = '' THEN count ELSE 0 END) * 100.0 / total, 2) AS unknown
 FROM base, total_sum
-GROUP BY country_region, total_countries;
+GROUP BY country_region, total;
 """)
 ```
 
@@ -336,10 +334,10 @@ total AS (
   SELECT SUM(count) AS total_count FROM base
 )
 SELECT
-  b.country_income_category,
-  b.count,
-  t.total_count,
-  ROUND(b.count * 100.0 / t.total_count, 2) AS percent_of_total
-FROM base b, total t;
+  base.country_income_category,
+  base.count,
+  total.total_count,
+  ROUND(base.count * 100.0 / total.total_count, 2) AS percent_of_total
+FROM base, total;
 """)
 ```
